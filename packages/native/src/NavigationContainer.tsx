@@ -17,6 +17,7 @@ import type { DocumentTitleOptions, LinkingOptions, Theme } from './types';
 import useBackButton from './useBackButton';
 import useDocumentTitle from './useDocumentTitle';
 import useLinking from './useLinking';
+import useLinkingAsync from './uselinkingAsync';
 import useThenable from './useThenable';
 
 declare global {
@@ -33,6 +34,7 @@ type Props<ParamList extends {}> = NavigationContainerProps & {
   linking?: LinkingOptions<ParamList>;
   fallback?: React.ReactNode;
   documentTitle?: DocumentTitleOptions;
+  asynchronous?: boolean;
   onReady?: () => void;
 };
 
@@ -57,6 +59,7 @@ function NavigationContainerInner(
     fallback = null,
     documentTitle,
     onReady,
+    asynchronous,
     ...rest
   }: Props<ParamListBase>,
   ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
@@ -73,12 +76,15 @@ function NavigationContainerInner(
   useBackButton(refContainer);
   useDocumentTitle(refContainer, documentTitle);
 
-  const { getInitialState } = useLinking(refContainer, {
-    independent: rest.independent,
-    enabled: isLinkingEnabled,
-    prefixes: [],
-    ...linking,
-  });
+  const { getInitialState } = (asynchronous ? useLinkingAsync : useLinking)(
+    refContainer,
+    {
+      independent: rest.independent,
+      enabled: isLinkingEnabled,
+      prefixes: [],
+      ...linking,
+    }
+  );
 
   // Add additional linking related info to the ref
   // This will be used by the devtools
