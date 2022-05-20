@@ -243,6 +243,7 @@ export default function App() {
         backgroundColor="rgba(0, 0, 0, 0.24)"
       />
       <NavigationContainer
+        asynchronous
         ref={navigationRef}
         initialState={initialState}
         onStateChange={(state) =>
